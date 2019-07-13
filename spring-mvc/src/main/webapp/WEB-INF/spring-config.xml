@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="dataSource1"
+		class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName"
+			value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url"
+			value="jdbc:oracle:thin:@localhost:1521:XE" />
+		<property name="username" value="hr" />
+		<property name="password" value="hr" />
+	</bean>
+	<!-- <bean id="dataSource2" class="org.apache.commons.dbcp2.BasicDataSource" 
+		destroy-method="close"> <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/> 
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/> <property 
+		name="username" value="hr"/> <property name="password" value="hr"/> </bean> -->
+
+	<!-- <bean id="hw" class="com.lti.component.HelloWorld"> -->
+	<!-- collaborators and configuration for this bean go here -->
+	<!-- </bean> -->
+	<!-- <bean id="ca" class="com.lti.component.Calculator"> -->
+	<!-- collaborators and configuration for this bean go here -->
+	<!-- </bean> -->
+
+
+	<!-- more bean definitions go here -->
+	<!-- -Spring Jpa integration settings -->
+	<!-- This bean configuration will create the EntityManager factory & EntityManager 
+		Object required when using JPA also no need of separate persistence.xml since 
+		all the settings required for using Hibernate or any other ORM can be done 
+		within this bean itself -->
+
+	<bean id="myEmf"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource1" />
+		<property name="packagesToScan"
+			value="com.lti.component,com.lti.entity" />
+		<property name="jpaVendorAdapter">
+			<bean
+				class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="myEmf" />
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+		<!-- one of the several properties available; the maximum file size in 
+			bytes -->
+		<property name="maxUploadSizePerFile" value="5242880" />
+	</bean>
+	<!-- base-package="com.lti.controller,com.lti.entity" /> -->
+	<context:component-scan
+		base-package="com.lti" />
+	<tx:annotation-driven />
+
+</beans>
